@@ -1,0 +1,3 @@
+import {Router} from 'express';import {query} from '../db.js';import {requireAuth} from '../middleware/auth.js';const r=Router();
+r.get('/',requireAuth,async(req,res,next)=>{try{const o=await query('SELECT id,title,body,type,read_at,created_at FROM notifications WHERE user_id=$1 ORDER BY created_at DESC LIMIT 50',[req.user.sub]);res.json({notifications:o.rows})}catch(e){next(e)}});
+r.patch('/:id/read',requireAuth,async(req,res,next)=>{try{const o=await query('UPDATE notifications SET read_at=now() WHERE id=$1 AND user_id=$2 RETURNING id,read_at',[req.params.id,req.user.sub]);if(!o.rowCount)return res.status(404).json({error:'Notification not found.'});res.json({notification:o.rows[0]})}catch(e){next(e)}});export default r;

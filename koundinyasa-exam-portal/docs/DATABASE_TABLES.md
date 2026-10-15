@@ -1,0 +1,5 @@
+# Database tables
+
+The migration creates **42 PostgreSQL tables**: departments, courses, academic_years, semesters, users, user_sessions, password_reset_tokens, email_verifications, subjects, topics, exam_categories, exam_templates, exams, exam_eligibility, exam_sections, questions, question_media, question_tags, question_tag_links, exam_attempts, student_answers, answer_events, results, result_subject_breakdown, grade_scales, certificates, notifications, announcements, announcement_reads, support_tickets, support_messages, admin_roles, admin_role_assignments, audit_logs, system_settings, exam_proctor_events, exam_accommodations, exam_invigilators, file_uploads, api_keys, scheduled_jobs, data_export_jobs.
+
+Foreign keys and indexes are included. Correct answer keys remain in the database and are excluded from the public exam question response.
