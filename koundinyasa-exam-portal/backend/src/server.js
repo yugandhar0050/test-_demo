@@ -1,27 +1,37 @@
-import dotenv from 'dotenv';dotenv.config();import express from 'express';import cors from 'cors';import helmet from 'helmet';import rateLimit from 'express-rate-limit';import {pool} from './db.js';import auth from './routes/auth.js';import exams from './routes/exams.js';import attempts from './routes/attempts.js';import dashboard from './routes/dashboard.js';import student from './routes/student.js';import results from './routes/results.js';import notifications from './routes/notifications.js';import admin from './routes/admin.js';import dailyStudent from './routes/dailyStudent.js';import dailyAdmin from './routes/dailyAdmin.js';
-const app=express();app.set('trust proxy',1);app.disable('x-powered-by');app.use(helmet());const allowedOrigins=[process.env.CLIENT_URL,'http://localhost:5173','http://localhost:5174'].filter(Boolean);app.use(cors({origin:(origin,callback)=>{if(!origin||allowedOrigins.includes(origin))callback(null,true);else callback(new Error('Not allowed by CORS'));}}));app.use(express.json({limit:'1mb'}));app.use('/api/auth',rateLimit({windowMs:900000,limit:30,standardHeaders:true,legacyHeaders:false}));app.get('/api/health',async(req,res)=>{try{await pool.query('SELECT 1');res.json({status:'ok',database:'connected'})}catch{res.status(503).json({status:'degraded',database:'unavailable'})}});app.use('/api/auth',auth);app.use('/api/exams',exams);app.use('/api/attempts',attempts);app.use('/api/dashboard',dashboard);app.use('/api/student',student);app.use('/api/student',dailyStudent);app.use('/api/results',results);app.use('/api/notifications',notifications);app.use('/api/admin',admin);app.use('/api/admin',dailyAdmin);app.use((req,res)=>res.status(404).json({error:'Route not found.'}));app.use((e,req,res,next)=>{console.error(e.message);res.status(500).json({error:process.env.NODE_ENV==='production'?'Unexpected server error.':e.message})});const server=app.listen(Number(process.env.PORT||5000),()=>console.log('Exam Portal API listening on '+(process.env.PORT||5000)));
+import dotenv from 'dotenv';
+dotenv.config();
+import app from './app.js';
+import { pool } from './db.js';
 
-let isShuttingDown=false;
-const gracefulShutdown=(signal)=>{
-  if(isShuttingDown)return;
-  isShuttingDown=true;
+const port = Number(process.env.PORT || 5000);
+const server = app.listen(port, () => {
+  console.log('Exam Portal API listening on ' + port);
+});
+
+let isShuttingDown = false;
+const gracefulShutdown = (signal) => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
   console.log(`[server] Received ${signal}. Shutting down gracefully...`);
-  server.close(async()=>{
+  server.close(async () => {
     console.log('[server] HTTP server closed.');
-    try{
+    try {
       await pool.end();
       console.log('[server] Database pool closed.');
       process.exit(0);
-    }catch(err){
-      console.error('[server] Error closing database pool:',err.message);
+    } catch (err) {
+      console.error('[server] Error closing database pool:', err.message);
       process.exit(1);
     }
   });
-  setTimeout(()=>{
+  setTimeout(() => {
     console.error('[server] Shutdown timeout exceeded. Forcing exit.');
     process.exit(1);
-  },5000).unref();
+  }, 5000).unref();
 };
 
-process.on('SIGTERM',()=>gracefulShutdown('SIGTERM'));
-process.on('SIGINT',()=>gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+export default app;
+
