@@ -5,7 +5,7 @@ import {requireAuth} from '../middleware/auth.js';
 
 const r = Router();
 r.use(requireAuth, (req, res, next) => {
-  if (req.user?.role !== 'student') return res.status(403).json({error: 'Student access required.'});
+  if (req.user?.role !== 'student') return res.status(403).json({error: 'Employee access required.'});
   next();
 });
 

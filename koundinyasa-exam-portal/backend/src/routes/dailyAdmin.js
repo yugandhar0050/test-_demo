@@ -323,7 +323,7 @@ r.patch('/daily-records/:id/request-corrections', async (req, res, next) => {
 
     res.json({
       record: updated.rows[0],
-      message: 'Corrections requested. Feedback sent to student.'
+      message: 'Corrections requested. Feedback sent to employee.'
     });
   } catch (e) {
     next(e);

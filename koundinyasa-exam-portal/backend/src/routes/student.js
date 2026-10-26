@@ -3,7 +3,7 @@ import {query} from '../db.js';
 import {requireAuth} from '../middleware/auth.js';
 
 const r=Router();
-r.use(requireAuth,(req,res,next)=>req.user?.role==='student'?next():res.status(403).json({error:'Student access required.'}));
+r.use(requireAuth,(req,res,next)=>req.user?.role==='student'?next():res.status(403).json({error:'Employee access required.'}));
 
 r.get('/roadmap',async(req,res,next)=>{
   try{

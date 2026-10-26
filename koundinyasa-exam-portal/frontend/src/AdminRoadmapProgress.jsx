@@ -32,7 +32,7 @@ export default function AdminRoadmapProgress({ Layout }) {
   useEffect(() => {
     Promise.all([api.get('/admin/student-progress'), loadCatalog()])
       .then(([r]) => setStudents(r.data.students || []))
-      .catch(e => setErr(e.response?.data?.error || 'Unable to load student roadmap data.'))
+      .catch(e => setErr(e.response?.data?.error || 'Unable to load employee roadmap data.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -50,7 +50,7 @@ export default function AdminRoadmapProgress({ Layout }) {
       setAssignable(a.data.topics || []);
       setAssignTopic(a.data.topics?.[0]?.id ? String(a.data.topics[0].id) : '');
     } catch (e) {
-      setErr(e.response?.data?.error || 'Unable to load this student roadmap.');
+      setErr(e.response?.data?.error || 'Unable to load this employee roadmap.');
     } finally {
       setDetailLoading(false);
     }
@@ -109,7 +109,7 @@ export default function AdminRoadmapProgress({ Layout }) {
     try {
       await api.post(`/admin/student-progress/${selected.id}/topics`, { topicId: assignTopic });
       await openStudent(selected);
-      setMsg('Topic assigned to student.');
+      setMsg('Topic assigned to employee.');
     } catch (e) {
       setErr(e.response?.data?.error || 'Unable to assign topic.');
     } finally {
@@ -155,9 +155,9 @@ export default function AdminRoadmapProgress({ Layout }) {
     <Wrapper>
       <div className="page-intro">
         <div>
-          <label className="eyebrow">STUDENT LEARNING</label>
+          <label className="eyebrow">EMPLOYEE LEARNING</label>
           <h1>Roadmap progress</h1>
-          <p>Create modules and topics, then assign course topics to individual students.</p>
+          <p>Create modules and topics, then assign course topics to individual employees.</p>
         </div>
       </div>
       {err && <div className="error" role="alert">{err}</div>}
@@ -166,7 +166,7 @@ export default function AdminRoadmapProgress({ Layout }) {
       <section className="roadmap-content-manager">
         <form className="panel form-panel" onSubmit={createModule}>
           <h3>Create a roadmap module</h3>
-          <p className="form-help">Choose a course for course-specific topics, or leave blank for all students.</p>
+          <p className="form-help">Choose a course for course-specific topics, or leave blank for all employees.</p>
           <label>
             Module name
             <input
@@ -182,7 +182,7 @@ export default function AdminRoadmapProgress({ Layout }) {
               value={moduleForm.courseId}
               onChange={e => setModuleForm({ ...moduleForm, courseId: e.target.value })}
             >
-              <option value="">All students</option>
+              <option value="">All employees</option>
               {catalog.courses.map(c => (
                 <option key={c.id} value={c.id}>
                   {c.name}{c.code ? ` (${c.code})` : ''}
@@ -195,7 +195,7 @@ export default function AdminRoadmapProgress({ Layout }) {
             <textarea
               value={moduleForm.description}
               onChange={e => setModuleForm({ ...moduleForm, description: e.target.value })}
-              placeholder="What students will learn"
+              placeholder="What employees will learn"
             />
           </label>
           <div className="roadmap-form-footer">
@@ -207,7 +207,7 @@ export default function AdminRoadmapProgress({ Layout }) {
 
         <form className="panel form-panel" onSubmit={createTopic}>
           <h3>Add a roadmap topic</h3>
-          <p className="form-help">Topics are added to a module, and inherited by its course or all students.</p>
+          <p className="form-help">Topics are added to a module, and inherited by its course or all employees.</p>
           <label>
             Module
             <select
@@ -218,7 +218,7 @@ export default function AdminRoadmapProgress({ Layout }) {
               <option value="">Choose a module</option>
               {catalog.modules.map(m => (
                 <option key={m.id} value={String(m.id)}>
-                  {m.name}{m.course_name ? ` — ${m.course_name}` : ' — All students'}
+                  {m.name}{m.course_name ? ` — ${m.course_name}` : ' — All employees'}
                 </option>
               ))}
             </select>
@@ -255,12 +255,12 @@ export default function AdminRoadmapProgress({ Layout }) {
         <>
           <div className="roadmap-detail-toolbar">
             <button className="btn light" onClick={() => { setSelected(null); setDetail(null); setMsg(''); setErr(''); }}>
-              ← All students
+              ← All employees
             </button>
             <span>{selected.first_name} {selected.last_name} · {selected.student_id}</span>
           </div>
           {detailLoading ? (
-            <div className="panel empty">Loading student roadmap…</div>
+            <div className="panel empty">Loading employee roadmap…</div>
           ) : detail && (
             <>
               <div className="roadmap-assign-bar panel">
@@ -315,7 +315,7 @@ export default function AdminRoadmapProgress({ Layout }) {
                 ))
               ) : (
                 <div className="panel empty">
-                  <b>No topics for this student yet</b>
+                  <b>No topics for this employee yet</b>
                   <p>Create a global module/topic above, or create a course-specific topic and assign it here.</p>
                 </div>
               )}
@@ -326,31 +326,31 @@ export default function AdminRoadmapProgress({ Layout }) {
         <div className="panel table-panel roadmap-admin-table">
           <div className="roadmap-admin-filters">
             <input
-              aria-label="Search students"
-              placeholder="Search name, student ID, or email"
+              aria-label="Search employees"
+              placeholder="Search name, employee ID, or email"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
             <select
-              aria-label="Filter students by roadmap progress"
+              aria-label="Filter employees by roadmap progress"
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
-              <option value="all">All students</option>
+              <option value="all">All employees</option>
               <option value="not_started">Not started</option>
               <option value="in_progress">In progress</option>
               <option value="complete">Complete</option>
             </select>
           </div>
           {loading ? (
-            <div className="empty">Loading student progress…</div>
+            <div className="empty">Loading employee progress…</div>
           ) : filtered.length ? (
             <div className="table-scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Student</th>
-                    <th>Student ID</th>
+                    <th>Employee</th>
+                    <th>Employee ID</th>
                     <th>Total topics</th>
                     <th>Completed</th>
                     <th>Pending</th>
@@ -387,7 +387,7 @@ export default function AdminRoadmapProgress({ Layout }) {
           ) : (
             <div className="empty">
               <BookOpen />
-              <b>No students match this filter</b>
+              <b>No employees match this filter</b>
             </div>
           )}
         </div>

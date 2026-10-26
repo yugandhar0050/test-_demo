@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { registerSchema, ALLOWED_DOMAINS } from '../src/routes/auth.js';
 import { requireAdmin } from '../src/middleware/auth.js';
 
-test('Domain selection - ALLOWED_DOMAINS contains the five required domains', () => {
-  const expected = ['fullstack', 'database', 'testing', 'cybersecurity', 'sap'];
+test('Domain selection - ALLOWED_DOMAINS contains the six required domains', () => {
+  const expected = ['fullstack', 'database', 'testing', 'cybersecurity', 'sap', 'devops'];
   assert.deepEqual(ALLOWED_DOMAINS, expected);
 });
 
@@ -123,7 +123,8 @@ test('Domain selection - Domain label mapping and unassigned user fallback', () 
     database: 'Database',
     testing: 'Testing',
     cybersecurity: 'Cybersecurity',
-    sap: 'SAP'
+    sap: 'SAP',
+    devops: 'DevOps'
   };
 
   for (const d of ALLOWED_DOMAINS) {

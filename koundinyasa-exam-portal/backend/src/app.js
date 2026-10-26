@@ -21,11 +21,16 @@ app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(helmet());
 
+const configuredOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  ...configuredOrigins,
   'http://localhost:5173',
   'http://localhost:5174'
-].filter(Boolean);
+];
 
 app.use(cors({
   origin: (origin, callback) => {

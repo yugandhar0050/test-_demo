@@ -26,7 +26,8 @@ const DOMAIN_LABELS = {
   database: 'Database',
   testing: 'Testing',
   cybersecurity: 'Cybersecurity',
-  sap: 'SAP'
+  sap: 'SAP',
+  devops: 'DevOps'
 };
 
 export default function AdminDailyRecords({ Layout, Stat }) {
@@ -128,7 +129,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
   async function handleRequestCorrections() {
     if (!activeRecord) return;
     if (!feedbackInput.trim()) {
-      return setErr('Please write specific revision feedback for the student.');
+      return setErr('Please write specific revision feedback for the employee.');
     }
     setRequestingCorrections(true);
     setErr('');
@@ -137,7 +138,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
       await api.patch(`/admin/daily-records/${activeRecord.id}/request-corrections`, {
         feedback: feedbackInput.trim()
       });
-      setMsg('Corrections requested. Feedback has been sent to the student.');
+      setMsg('Corrections requested. Feedback has been sent to the employee.');
       setActiveRecord(null);
       await loadAllData();
     } catch (e) {
@@ -249,7 +250,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
         <div>
           <label className="eyebrow">ACADEMIC OVERSIGHT</label>
           <h1>Daily Learning Records<em>.</em></h1>
-          <p>Monitor student daily activity, review submitted work, and manage reporting mandates.</p>
+          <p>Monitor employee daily activity, review submitted work, and manage reporting mandates.</p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
@@ -272,14 +273,14 @@ export default function AdminDailyRecords({ Layout, Stat }) {
 
       {/* 7 Summary Cards as requested */}
       <div className="stats" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '14px' }}>
-        <Stat label="Total Students" value={s.totalStudents} sub="Registered accounts" I={Users} tone="a" />
+        <Stat label="Total Employees" value={s.totalStudents} sub="Registered accounts" I={Users} tone="a" />
         <Stat label="Submitted Logs" value={s.totalRecords} sub="All recorded logs" I={CalendarCheck} tone="b" />
         <Stat label="Awaiting Review" value={s.awaitingReview} sub="Pending mentor review" I={Clock} tone="d" />
         <Stat label="Approved" value={s.approved} sub="Verified records" I={CheckCircle2} tone="b" />
       </div>
 
       <div className="stats" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '22px' }}>
-        <Stat label="Corrections Requested" value={s.correctionsRequested} sub="Revisions awaiting student" I={AlertCircle} tone="d" />
+        <Stat label="Corrections Requested" value={s.correctionsRequested} sub="Revisions awaiting employee" I={AlertCircle} tone="d" />
         <Stat label="Today: Pending" value={s.pendingToday} sub="Awaiting submission today" I={Clock} tone="a" />
         <Stat label="Today: Overdue" value={s.overdueToday} sub="Passed daily due time" I={XCircle} tone="d" />
       </div>
@@ -291,14 +292,14 @@ export default function AdminDailyRecords({ Layout, Stat }) {
             <div>
               <h3>Daily Submissions ({filtered.length})</h3>
               <p style={{ margin: '3px 0 0', fontSize: '10px', color: '#8899aa' }}>
-                Filter by student, learning domain, submission status, or date range.
+                Filter by employee, learning domain, submission status, or date range.
               </p>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
               <input
                 aria-label="Search records"
-                placeholder="Search student, ID, topic..."
+                placeholder="Search employee, ID, topic..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 style={{ width: '220px', fontSize: '11px', padding: '9px 12px' }}
@@ -316,6 +317,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
                 <option value="testing">Testing</option>
                 <option value="cybersecurity">Cybersecurity</option>
                 <option value="sap">SAP</option>
+                <option value="devops">DevOps</option>
                 <option value="unassigned">Not specified</option>
               </select>
 
@@ -371,8 +373,8 @@ export default function AdminDailyRecords({ Layout, Stat }) {
               <table>
                 <thead>
                   <tr>
-                    <th>Student</th>
-                    <th>Student ID</th>
+                    <th>Employee</th>
+                    <th>Employee ID</th>
                     <th>Domain</th>
                     <th>Date</th>
                     <th>Submission Time</th>
@@ -483,7 +485,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
             <div>
               <h3>Submission Mandates ({mandates.length})</h3>
               <p style={{ margin: '3px 0 0', fontSize: '10px', color: '#8899aa' }}>
-                Enforce daily study submissions across all students or targeted learning domains.
+                Enforce daily study submissions across all employees or targeted learning domains.
               </p>
             </div>
             <button className="btn" onClick={openCreateMandate}>
@@ -519,7 +521,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
                       <td>
                         {m.target_type === 'all' && (
                           <span className="pill" style={{ background: '#e3faff', color: '#098fab' }}>
-                            All Students
+                            All Employees
                           </span>
                         )}
                         {m.target_type === 'domain' && (
@@ -528,7 +530,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
                           </span>
                         )}
                         {m.target_type === 'student' && (
-                          <span className="pill">Specific Student</span>
+                          <span className="pill">Specific Employee</span>
                         )}
                       </td>
                       <td>
@@ -656,7 +658,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
                   {activeRecord.first_name} {activeRecord.last_name}
                 </h3>
                 <span style={{ fontSize: '10px', color: '#7a8d9e' }}>
-                  Student ID: <b>{activeRecord.student_id}</b> · {activeRecord.email} ·{' '}
+                  Employee ID: <b>{activeRecord.student_id}</b> · {activeRecord.email} ·{' '}
                   {activeRecord.domain ? DOMAIN_LABELS[activeRecord.domain] || activeRecord.domain : 'Domain not specified'}
                 </span>
               </div>
@@ -860,7 +862,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
                   {editingMandate ? 'Edit Submission Mandate' : 'Create Daily Reporting Mandate'}
                 </h3>
                 <p style={{ margin: 0, fontSize: '10px', color: '#7a8d9e' }}>
-                  Configure daily submission rules, schedules, and target student cohorts.
+                  Configure daily submission rules, schedules, and target employee cohorts.
                 </p>
               </div>
               <button
@@ -885,7 +887,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
               </label>
 
               <label>
-                Instructions for Students
+                Instructions for Employees
                 <textarea
                   name="instructions"
                   value={mf.instructions}
@@ -903,9 +905,9 @@ export default function AdminDailyRecords({ Layout, Stat }) {
                     value={mf.targetType}
                     onChange={e => setMf({ ...mf, targetType: e.target.value, targetValue: '' })}
                   >
-                    <option value="all">All Enrolled Students</option>
+                    <option value="all">All Enrolled Employees</option>
                     <option value="domain">By Learning Domain</option>
-                    <option value="student">Specific Student</option>
+                    <option value="student">Specific Employee</option>
                   </select>
                 </label>
 
@@ -924,18 +926,19 @@ export default function AdminDailyRecords({ Layout, Stat }) {
                       <option value="testing">Testing</option>
                       <option value="cybersecurity">Cybersecurity</option>
                       <option value="sap">SAP</option>
+                      <option value="devops">DevOps</option>
                     </select>
                   </label>
                 )}
 
                 {mf.targetType === 'student' && (
                   <label>
-                    Student ID or UUID
+                    Employee ID or UUID
                     <input
                       name="targetValue"
                       value={mf.targetValue}
                       onChange={e => setMf({ ...mf, targetValue: e.target.value })}
-                      placeholder="e.g. 294001 or student UUID"
+                      placeholder="e.g. 294001 or employee UUID"
                       required
                     />
                   </label>
@@ -1001,7 +1004,7 @@ export default function AdminDailyRecords({ Layout, Stat }) {
                     onChange={e => setMf({ ...mf, allowEditsAfterSubmission: e.target.checked })}
                     style={{ width: '16px', height: '16px' }}
                   />
-                  <span>Allow student edits after submission (before review)</span>
+                  <span>Allow employee edits after submission (before review)</span>
                 </label>
               </div>
 

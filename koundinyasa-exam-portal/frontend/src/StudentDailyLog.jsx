@@ -22,7 +22,8 @@ const DOMAIN_LABELS = {
   database: 'Database',
   testing: 'Testing',
   cybersecurity: 'Cybersecurity',
-  sap: 'SAP'
+  sap: 'SAP',
+  devops: 'DevOps'
 };
 
 export default function StudentDailyLog({ Layout }) {
