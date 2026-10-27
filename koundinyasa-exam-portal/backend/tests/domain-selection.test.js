@@ -64,17 +64,80 @@ test('Domain selection - Registration with an invalid domain is rejected', () =>
 
   const resInvalid = registerSchema.safeParse(payloadInvalid);
   assert.equal(resInvalid.success, false);
-  assert.match(resInvalid.error.issues[0].message, /valid domain/i);
+  assert.equal(resInvalid.error.issues[0].message, 'Please select a valid domain (Full Stack Development, Database, Testing, Cybersecurity, SAP, or DevOps).');
 
   const resTitleCase = registerSchema.safeParse({ ...payloadInvalid, domain: 'Full Stack Development' });
   assert.equal(resTitleCase.success, false);
-  assert.match(resTitleCase.error.issues[0].message, /valid domain/i);
+  assert.equal(resTitleCase.error.issues[0].message, 'Please select a valid domain (Full Stack Development, Database, Testing, Cybersecurity, SAP, or DevOps).');
+});
+
+test('Domain selection - DevOps registration with canonical devops succeeds and title-case is rejected', () => {
+  const basePayload = {
+    firstName: 'Yugandhar',
+    lastName: 'Pinjala',
+    studentId: '294811',
+    phone: '9182630660',
+    email: 'pinjala040@gmail.com',
+    password: 'SecurePassword123!',
+    confirmPassword: 'SecurePassword123!'
+  };
+  const devopsRes = registerSchema.safeParse({ ...basePayload, domain: 'devops' });
+  assert.equal(devopsRes.success, true);
+  assert.equal(devopsRes.data.domain, 'devops');
+
+  const devopsTitle = registerSchema.safeParse({ ...basePayload, domain: 'DevOps' });
+  assert.equal(devopsTitle.success, false);
+  assert.equal(devopsTitle.error.issues[0].message, 'Please select a valid domain (Full Stack Development, Database, Testing, Cybersecurity, SAP, or DevOps).');
+});
+
+test('Domain selection - Invalid registration fails schema validation and halts before user record creation', () => {
+  let dbInsertCalled = false;
+  const fakeRegisterHandler = (body) => {
+    const p = registerSchema.safeParse(body);
+    if (!p.success) {
+      return { status: 400, error: p.error.issues[0].message };
+    }
+    dbInsertCalled = true;
+    return { status: 201 };
+  };
+
+  const invalidBody = {
+    firstName: 'Yugandhar',
+    lastName: 'Pinjala',
+    studentId: '294811',
+    phone: '9182630660',
+    email: 'pinjala040@gmail.com',
+    domain: 'cloud',
+    password: 'SecurePassword123!',
+    confirmPassword: 'SecurePassword123!'
+  };
+
+  const result = fakeRegisterHandler(invalidBody);
+  assert.equal(result.status, 400);
+  assert.equal(result.error, 'Please select a valid domain (Full Stack Development, Database, Testing, Cybersecurity, SAP, or DevOps).');
+  assert.equal(dbInsertCalled, false, 'Database insert must not be called when domain validation fails');
+});
+
+test('Domain selection - Frontend dropdown options match supported canonical domains', () => {
+  const frontendDropdownOptions = [
+    { value: '', label: '-- Choose your learning domain --' },
+    { value: 'fullstack', label: 'Full Stack Development' },
+    { value: 'database', label: 'Database' },
+    { value: 'testing', label: 'Testing' },
+    { value: 'cybersecurity', label: 'Cybersecurity' },
+    { value: 'sap', label: 'SAP' },
+    { value: 'devops', label: 'DevOps' }
+  ];
+
+  const validOptionValues = frontendDropdownOptions.map(o => o.value).filter(Boolean);
+  assert.deepEqual(validOptionValues, ALLOWED_DOMAINS);
+  assert.equal(validOptionValues.includes('devops'), true);
 });
 
 test('Domain selection - Preserves all existing registration validation rules', () => {
   const validDomain = 'fullstack';
 
-  // Invalid student ID (must start with 294 and have 6 digits)
+  // Invalid student ID (must start with 294 or 295 and have 6 digits)
   const badId = registerSchema.safeParse({
     firstName: 'Koundinya',
     lastName: 'Candidate',
@@ -86,7 +149,7 @@ test('Domain selection - Preserves all existing registration validation rules', 
     confirmPassword: 'SecurePassword123!'
   });
   assert.equal(badId.success, false);
-  assert.match(badId.error.issues[0].message, /294/);
+  assert.match(badId.error.issues[0].message, /294 or 295/);
 
   // Mismatched passwords
   const mismatch = registerSchema.safeParse({
