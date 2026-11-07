@@ -1,0 +1,144 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "ECS CPU",
+        "region": "ap-south-1",
+        "period": 60,
+        "stat": "Average",
+        "metrics": [
+          [
+            "AWS/ECS",
+            "CPUUtilization",
+            "ClusterName",
+            "exam-portal-staging",
+            "ServiceName",
+            "exam-portal-staging-backend"
+          ]
+        ],
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "ECS Memory",
+        "region": "ap-south-1",
+        "period": 60,
+        "stat": "Average",
+        "metrics": [
+          [
+            "AWS/ECS",
+            "MemoryUtilization",
+            "ClusterName",
+            "exam-portal-staging",
+            "ServiceName",
+            "exam-portal-staging-backend"
+          ]
+        ],
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "ALB Healthy Targets",
+        "region": "ap-south-1",
+        "period": 60,
+        "stat": "Average",
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "HealthyHostCount",
+            "LoadBalancer",
+            "app/exam-staging-alb/884a5a287d372903",
+            "TargetGroup",
+            "targetgroup/exam-staging-api/480a0edc92703bee"
+          ]
+        ],
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "ALB 5xx Errors",
+        "region": "ap-south-1",
+        "period": 60,
+        "stat": "Sum",
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "HTTPCode_Target_5XX_Count",
+            "LoadBalancer",
+            "app/exam-staging-alb/884a5a287d372903",
+            "TargetGroup",
+            "targetgroup/exam-staging-api/480a0edc92703bee"
+          ]
+        ],
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "RDS CPU",
+        "region": "ap-south-1",
+        "period": 60,
+        "stat": "Average",
+        "metrics": [
+          [
+            "AWS/RDS",
+            "CPUUtilization",
+            "DBInstanceIdentifier",
+            "exam-portal-staging-db"
+          ]
+        ],
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "RDS Free Storage",
+        "region": "ap-south-1",
+        "period": 60,
+        "stat": "Average",
+        "metrics": [
+          [
+            "AWS/RDS",
+            "FreeStorageSpace",
+            "DBInstanceIdentifier",
+            "exam-portal-staging-db"
+          ]
+        ],
+        "view": "timeSeries"
+      }
+    }
+  ]
+}

@@ -27,7 +27,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: 30d
       BCRYPT_ROUNDS: 12
-      CLIENT_URL: ""
+      CLIENT_URL: "http://localhost,http://127.0.0.1"
     depends_on:
       db:
         condition: service_healthy
