@@ -1,7 +1,34 @@
+# Dependencies and builds
 node_modules/
 dist/
-.env
+coverage/
 *.log
+
+# Secrets
 .env
-.env
-.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# AWS credentials
+.aws/
+credentials
+
+# Terraform
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/tfplan
+**/*.tfplan
+**/crash.log
+**/crash.*.log
+**/*.tfvars
+**/*.tfvars.json
+!**/*.tfvars.example
+
+# Local files
+.DS_Store
+.vscode/

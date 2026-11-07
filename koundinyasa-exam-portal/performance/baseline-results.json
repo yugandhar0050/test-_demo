@@ -1,0 +1,150 @@
+{
+    "metrics": {
+        "http_req_blocked": {
+            "p(90)": 0.0011353000000000003,
+            "p(95)": 0.0013712999999999967,
+            "avg": 63.409327237410054,
+            "min": 0.000263,
+            "med": 0.000681,
+            "max": 3322.123352
+        },
+        "http_req_connecting": {
+            "min": 0,
+            "med": 0,
+            "max": 2077.230507,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 19.545702899280577
+        },
+        "iteration_duration": {
+            "avg": 2228.8612919640286,
+            "min": 2072.292871,
+            "med": 2089.786287,
+            "max": 5420.934679,
+            "p(90)": 2154.5310226,
+            "p(95)": 3467.8969616
+        },
+        "checks": {
+            "passes": 417,
+            "fails": 0,
+            "thresholds": {
+                "rate>0.99": false
+            },
+            "value": 1
+        },
+        "http_req_sending": {
+            "med": 0.1047365,
+            "max": 0.652396,
+            "p(90)": 0.2093143,
+            "p(95)": 0.2379922,
+            "avg": 0.12498891007194238,
+            "min": 0.016635
+        },
+        "data_sent": {
+            "count": 28058,
+            "rate": 888.8320047106126
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 278,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_reqs": {
+            "count": 278,
+            "rate": 8.80658982498932
+        },
+        "http_req_waiting": {
+            "p(95)": 90.17604799999978,
+            "avg": 49.49797775179851,
+            "min": 21.904108,
+            "med": 48.9450735,
+            "max": 165.227612,
+            "p(90)": 66.2119234
+        },
+        "vus_max": {
+            "value": 10,
+            "min": 10,
+            "max": 10
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 49.907886827338146,
+            "min": 22.1704,
+            "med": 49.8180335,
+            "max": 165.388054,
+            "p(90)": 66.4382937,
+            "p(95)": 90.45513304999977
+        },
+        "vus": {
+            "value": 3,
+            "min": 3,
+            "max": 10
+        },
+        "http_req_tls_handshaking": {
+            "avg": 1.506469978417266,
+            "min": 0,
+            "med": 0,
+            "max": 67.070646,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "data_received": {
+            "rate": 9281.448751164104,
+            "count": 292990
+        },
+        "http_req_receiving": {
+            "p(90)": 0.28568309999999997,
+            "p(95)": 1.0187314999999943,
+            "avg": 0.28492016546762566,
+            "min": 0.023795,
+            "med": 0.1818365,
+            "max": 5.054387
+        },
+        "http_req_duration": {
+            "max": 165.388054,
+            "p(90)": 66.4382937,
+            "p(95)": 90.45513304999977,
+            "avg": 49.907886827338146,
+            "min": 22.1704,
+            "med": 49.8180335,
+            "thresholds": {
+                "p(95)<2000": false
+            }
+        },
+        "iterations": {
+            "count": 139,
+            "rate": 4.40329491249466
+        }
+    },
+    "root_group": {
+        "groups": {},
+        "checks": {
+                "frontend returns 200": {
+                    "id": "07e8d774b983b8bbdac5a58d36664bfa",
+                    "passes": 139,
+                    "fails": 0,
+                    "name": "frontend returns 200",
+                    "path": "::frontend returns 200"
+                },
+                "backend returns 200": {
+                    "name": "backend returns 200",
+                    "path": "::backend returns 200",
+                    "id": "060989dc01ef08bc1e4dcdc4d046c293",
+                    "passes": 139,
+                    "fails": 0
+                },
+                "database connected": {
+                    "fails": 0,
+                    "name": "database connected",
+                    "path": "::database connected",
+                    "id": "260b6480a3429f6c96910c0468392718",
+                    "passes": 139
+                }
+            },
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+}

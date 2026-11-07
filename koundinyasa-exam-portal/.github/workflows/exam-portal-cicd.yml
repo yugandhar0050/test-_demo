@@ -1,0 +1,133 @@
+
+name: Exam Portal CI/CD
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: exam-portal-staging
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: exam-portal-staging-backend
+  ECS_CLUSTER: exam-portal-staging
+  ECS_SERVICE: exam-portal-staging-backend
+  S3_BUCKET: exam-portal-staging-frontend-225c8a4c4482d3e7301164dc90
+  CLOUDFRONT_ID: E1ZQA9IX2HJZPW
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test backend
+        working-directory: backend
+        run: |
+          npm ci
+          npm test
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_URL: /api
+        run: |
+          npm ci
+          npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: "848635215310"
+
+      - name: Login to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        id: image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          IMAGE="$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+
+          docker build -t "$IMAGE" ./backend
+          docker push "$IMAGE"
+
+          echo "uri=$IMAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare ECS task definition
+        env:
+          IMAGE: ${{ steps.image.outputs.uri }}
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition exam-portal-staging-backend \
+            --query taskDefinition \
+            --output json > task.json
+
+          jq -e --arg image "$IMAGE" '
+            if ([.containerDefinitions[].name] | index("backend")) == null
+            then error("ECS container named backend not found")
+            else
+              del(
+                .taskDefinitionArn,
+                .revision,
+                .status,
+                .requiresAttributes,
+                .compatibilities,
+                .registeredAt,
+                .registeredBy
+              )
+              | .containerDefinitions |= map(
+                  if .name == "backend"
+                  then .image = $image
+                  else .
+                  end
+                )
+            end
+          ' task.json > task-new.json
+
+      - name: Deploy backend to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: task-new.json
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
+          wait-for-service-stability: true
+          wait-max-delay-seconds: 15
+
+      - name: Upload frontend to S3
+        run: |
+          aws s3 sync frontend/dist/ "s3://$S3_BUCKET/"
+
+          aws s3 cp frontend/dist/index.html \
+            "s3://$S3_BUCKET/index.html" \
+            --content-type "text/html" \
+            --cache-control "no-cache, max-age=0, must-revalidate"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_ID" \
+            --paths "/" "/index.html"
+
+      - name: Verify application
+        run: |
+          curl --fail --silent --show-error \
+            --retry 5 --retry-delay 5 \
+            https://d2ulirdq336tyh.cloudfront.net/api/health
